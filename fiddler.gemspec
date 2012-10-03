@@ -16,7 +16,8 @@ Gem::Specification.new do |s|
   s.files = Dir["{lib,spec}/**/*"] + ["Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency 'httpclient'
+  s.add_dependency 'httpclient', '2.2.7'
+  s.add_dependency 'activesupport', '3.2.8'
 
   s.add_development_dependency 'rspec'
 end

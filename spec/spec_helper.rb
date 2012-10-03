@@ -10,8 +10,22 @@ RSpec.configure do |config|
    config.order = 'random'
 end
 
-#load the configuration which should be used to access request tracker
-# Fiddler.configure do |config|
+# create a file named config.rb here with the two methods
+# def test_config
+#    Fiddler.configure do |config|
+#       config.server_url = "some_url"
+#       config.username = "username"
+#       config.password = "password"
+#    end
 # end
-# create a file named config.rb here with the block declaration or do it in this file
+# def reset_config
+#    Fiddler.configure do |config|
+#       config.server_url = nil
+#       config.username = nil
+#       config.password = nil
+#       config.use_cookies = false
+#       config.ssl_verify = true
+#    end
+# end
+
 require 'config'
