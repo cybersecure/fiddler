@@ -22,7 +22,7 @@ module Fiddler
          def get(id)
             url = "ticket/#{id}"
             response = Fiddler::ConnectionManager.get(url)
-            
+            ticket = Fiddler::Parsers::TicketParser.parse(response)
          end
 
          # Creates a new ticket with the given options, it will not save the ticket

@@ -1,5 +1,6 @@
 require 'fiddler/configuration'
 require 'fiddler/helper'
 require 'fiddler/errors'
+require 'fiddler/parsers'
 require 'fiddler/ticket'
 require 'fiddler/connection_manager'

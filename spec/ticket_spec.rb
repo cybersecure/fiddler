@@ -6,7 +6,7 @@ describe Fiddler::Ticket do
    end
    
    it "should find a ticket with given id" do
-      Fiddler::Ticket.get(4357).should_not be_nil
+      Fiddler::Ticket.get(4200).should_not be_nil
    end
 
    it "should raise exception for invalid id" do
