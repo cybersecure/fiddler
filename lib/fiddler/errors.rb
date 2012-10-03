@@ -3,4 +3,5 @@ module Fiddler
    class TicketNotFoundError < StandardError; end
    class InvalidConfigurationError < StandardError; end
    class TicketAccessDeniedError < StandardError; end
+   class RequestError < StandardError; end
 end

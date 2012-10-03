@@ -3,8 +3,7 @@ require 'spec_helper'
 describe Fiddler::Configuration do
   describe 'when no options are given' do
     before do
-      Fiddler.configure do |config|
-      end
+      reset_config
     end
 
     it 'defaults to using no cookies' do

@@ -1,16 +1,36 @@
 module Fiddler
    class Ticket
-      attr_accessor :id, :subject, :status, :queue, :owner, :creator, :histories, :content, :last_updated
 
+      DefaultAttributes = %w(queue owner creator subject status priority initial_priority final_priority requestors cc admin_cc created starts started due resolved told last_updated time_estimated time_worked time_left text).inject({}){|memo, k| memo[k] = nil; memo}
+      RequiredAttributes = %w(queue subject)
+
+      attr_reader :histories, :saved
+      
       # Initializes a new instance of ticket object
       #
       # @params [Hash] of the initial options
-      def initialize(options={})
-         options = { :queue => "General", :owner => "Nobody", :status => "new"}.merge options
-         options.each do |key,value|
-            send "#{key}=", value
+      def initialize(attributes={})
+         if attributes
+            @attributes = DefaultAttributes.merge(attributes)
+         else
+            @attributes = DefaultAttributes
          end
-         @id = "ticket/new"
+         @attributes.update(:id => 'ticket/new')
+         @saved = false
+         @histories = []  
+         @new_record = true
+         add_methods!
+      end
+
+      def add_methods!
+         @attributes.each do |key, value|
+            (class << self; self; end).send :define_method, key do
+               return @attributes[key]
+            end
+            (class << self; self; end).send :define_method, "#{key}=" do |new_val|
+               @attributes[key] = new_val
+            end
+         end
       end
 
       # Class methods

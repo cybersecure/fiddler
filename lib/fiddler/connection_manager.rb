@@ -19,7 +19,9 @@ module Fiddler
             @client.get(url,options_with_login(options)).content
          end
 
-         def post
+         def post(url,options)
+            url = "#{base_url}#{url}"
+            @client.post(url,options_with_login(options)).content
          end
 
          def options_with_login(options)
@@ -32,33 +34,37 @@ module Fiddler
       class << self
          attr_accessor :client_connection
 
-         def connection
-            self.client_connection ||= Connection.new
-         end
-
          def get(url,options={})
             check_config
-            connection.get(url,options)
+            response = connection.get(url,options)
+            debug(response)
+            response
          end
 
-         def post(url,data,options={})
+         def post(url,options={})
             check_config
-            connection.post(url,options)
+            response = connection.post(url,options)
+            debug(response)
+            response
          end
 
          protected
 
          def check_config
             config = Fiddler.configuration
-            raise InvalidConfigurationError unless Helper.valid?(config.server_url)
-            unless Helper.valid?(config.username) and Helper.valid?(config.password)
+            raise InvalidConfigurationError if config.server_url.blank?
+            if config.username.blank? or config.password.blank?
                raise InvalidConfigurationError unless config.use_cookies
             end
          end
 
-         def debug
+         def connection
+            self.client_connection ||= Connection.new
          end
 
+         def debug(response)
+            puts response.inspect if ENV['DEBUG']
+         end
       end # end class method definitions
    end # end ConnectionManager module definition
 end # end main module
