@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Fiddler::Parsers::TicketParser do
+   before do
+      test_config
+   end
+   
    it "should return the response for proper request minus empty line" do
       response = Fiddler::ConnectionManager.get("/ticket/4200")
       response = Fiddler::Parsers::TicketParser.check_response_code(response)

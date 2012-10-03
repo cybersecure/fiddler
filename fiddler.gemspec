@@ -20,4 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '3.2.8'
 
   s.add_development_dependency 'rspec'
+  s.add_development_dependency 'spork'
+  s.add_development_dependency 'watchr'
 end
