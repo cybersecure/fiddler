@@ -1,4 +1,6 @@
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "../lib")))
+PROJECT_ROOT = File.expand_path('../..', __FILE__)
+$LOAD_PATH << File.join(PROJECT_ROOT, 'lib')
+
 require 'fiddler'
 
 RSpec.configure do |config|

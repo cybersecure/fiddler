@@ -1,2 +1,1 @@
-module Fiddler
-end
+require 'fiddler/configuration'
