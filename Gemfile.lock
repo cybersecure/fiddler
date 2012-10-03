@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fiddler (0.0.1)
+    fiddler (0.0.1alpha)
       activesupport (= 3.2.8)
       httpclient (= 2.2.7)
 
