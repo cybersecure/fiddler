@@ -31,11 +31,11 @@ module Fiddler
                if value.is_a?(Array)
                   sub_parts = Array.new
                   value.each do |part|
-                     sub_parts << "#{name} = '#{part}"
+                     sub_parts << "#{name} = '#{part}'"
                   end
                   query_array << '( ' + sub_parts.join(' OR ') + ' )'
                elsif value.is_a?(String) || value.is_a?(Symbol)
-                  query_array << "#{name} = #{value.to_s}"
+                  query_array << "#{name} = '#{value.to_s}'"
                end
             end
 

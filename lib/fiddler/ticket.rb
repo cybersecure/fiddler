@@ -57,8 +57,7 @@ module Fiddler
          # @returns [Array<Ticket>] of the tickets matching the criteria
          def all(conditions={})
             url = "search/ticket"
-            options = { :owner => "jais.cheema" }
-            response = Fiddler::ConnectionManager.get(url,Fiddler::Formatters::SearchRequestFormatter.format(options))
+            response = Fiddler::ConnectionManager.get(url,Fiddler::Formatters::SearchRequestFormatter.format(conditions))
             ticket = Fiddler::Parsers::TicketParser.parse_multiple(response)
          end
 
