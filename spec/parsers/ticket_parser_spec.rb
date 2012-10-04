@@ -17,4 +17,14 @@ describe Fiddler::Parsers::TicketParser do
       response = Fiddler::Parsers::TicketParser.check_response_code(response)
       expect { Fiddler::Parsers::TicketParser.check_for_errors(response) }.to raise_error
    end
+
+   it "should give ticket object for parse single method" do
+      response = Fiddler::ConnectionManager.get("/ticket/4200")
+      Fiddler::Parsers::TicketParser.parse_single(response).should be_a_kind_of(Fiddler::Ticket)
+   end
+
+   it "should give array of ticket objects for parse multiple method" do
+      response = Fiddler::ConnectionManager.get("/search/ticket?query=Owner='jais.cheema'")
+      Fiddler::Parsers::TicketParser.parse_multiple(response).should be_a_kind_of(Array)
+   end
 end

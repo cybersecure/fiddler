@@ -16,7 +16,8 @@ module Fiddler
 
          def get(url,options)
             url = "#{base_url}#{url}"
-            @client.get(url,options_with_login(options)).content
+            options = options_with_login(options)
+            @client.get(url,options).content
          end
 
          def post(url,options)

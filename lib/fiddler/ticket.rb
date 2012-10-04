@@ -33,6 +33,12 @@ module Fiddler
          end
       end
 
+      def description
+         @attributes.each do |key,value|
+            puts "#{key} = #{value}"
+         end
+      end
+
       # Class methods
       class << self
          # Gets the ticket with given id
@@ -42,7 +48,18 @@ module Fiddler
          def get(id)
             url = "ticket/#{id}"
             response = Fiddler::ConnectionManager.get(url)
-            ticket = Fiddler::Parsers::TicketParser.parse(response)
+            ticket = Fiddler::Parsers::TicketParser.parse_single(response)
+         end
+
+         # Search the tickets with the given conditions
+         #
+         # @params [Hash] of conditions
+         # @returns [Array<Ticket>] of the tickets matching the criteria
+         def all(conditions={})
+            url = "search/ticket"
+            options = { :owner => "jais.cheema" }
+            response = Fiddler::ConnectionManager.get(url,Fiddler::Formatters::SearchRequestFormatter.format(options))
+            ticket = Fiddler::Parsers::TicketParser.parse_multiple(response)
          end
 
          # Creates a new ticket with the given options, it will not save the ticket
