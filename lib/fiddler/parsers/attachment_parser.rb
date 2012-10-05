@@ -4,9 +4,12 @@ module Fiddler
          def self.parse_single(response)
             response = check_response_code(response)
             response = check_for_errors(response)
-            h = attachment_from_response(response)
-            puts h.inspect
-            h
+            attachment_from_response(response)
+         end
+
+         def self.parse_content(response)
+            response = check_response_code(response,false)
+            return response
          end
 
          protected
@@ -14,37 +17,37 @@ module Fiddler
          def self.check_for_errors(response)
             if response.length == 1
                raise Fiddler::FiddlerError, response.first
-            else
-               response.shift
             end
             response
          end
 
          def self.attachment_from_response(response)
             result = {}
-            content_lines = []
-            result["attachment_ids"] = []
+            collect_headers = false
+            headers = []
             response.each do |line|
                matches = /^(\S*?):\s(.*)/.match(line)
                if(matches)
                   key = matches[1].underscore
                   result[key] = matches[2]
+
+                  if key == "headers"
+                     collect_headers = true
+                     next
+                  elsif key == "content"
+                     break
+                  end
                end
 
-               content_matches = /^\s{9}(.*)$/.match(line)
-               if(content_matches)
-                  content_lines << content_matches[1]
-               end
-
-               attachment_matches = /^\s{13}(.*?):\s(.*)/.match(line)
-               if(attachment_matches)
-                  result["attachment_ids"] << attachment_matches[1]
+               spaced_content_matches = /^\s{9}(.*)$/.match(line)
+               if spaced_content_matches and collect_headers
+                  headers << spaced_content_matches[1]
                end
             end
-            result["attachment_ids"].count.times { content_lines.pop }
-            result["content"] += content_lines.join("\n")
-            result.delete("attachments")
-            history = Fiddler::History.new(result)
+            result.delete("content")
+            headers.unshift(result["headers"])
+            result["headers"] = headers
+            attachment = Fiddler::Attachment.new(result)
          end
       end
    end

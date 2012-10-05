@@ -6,8 +6,10 @@ describe Fiddler::ConnectionManager do
          reset_config
       end
 
+      use_vcr_cassette "root-request"
+
       it "should raise invalid Configuration error for missing configuration" do
-         expect { Fiddler::ConnectionManager.get("https://www.google.com") }.to raise_error(Fiddler::InvalidConfigurationError)
+         expect { Fiddler::ConnectionManager.get("/") }.to raise_error(Fiddler::InvalidConfigurationError)
       end
 
       it "should raise invalid Configuration error for missing credentials if cookies are not enabled" do
@@ -26,6 +28,8 @@ describe Fiddler::ConnectionManager do
       before do
          test_config
       end
+
+      use_vcr_cassette "root-request"
 
       it "should not return nil response for get request" do
          Fiddler::ConnectionManager.get("/").should_not be_nil

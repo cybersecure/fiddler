@@ -5,6 +5,8 @@ describe Fiddler::Parsers::BaseParser do
       test_config
    end
 
+   use_vcr_cassette "root-request"
+
    it "should not raise error for valid request" do
       response = Fiddler::ConnectionManager.get("/")
       expect { Fiddler::Parsers::BaseParser.check_response_code(response) }.to_not raise_error

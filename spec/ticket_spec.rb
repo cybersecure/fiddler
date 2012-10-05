@@ -5,6 +5,8 @@ describe Fiddler::Ticket do
       test_config
    end
    
+   use_vcr_cassette "get-tickets"
+
    it "should find a ticket with given id" do
       Fiddler::Ticket.get(4200).should be_a_kind_of(Fiddler::Ticket)
    end
@@ -14,6 +16,9 @@ describe Fiddler::Ticket do
    end
 
    describe "searching tickets" do
+      
+      use_vcr_cassette "search-tickets"
+
       it "should return empty array for empty conditions" do
          Fiddler::Ticket.all.should be_a_kind_of(Array)
          Fiddler::Ticket.all.length.should eql(0)
@@ -38,6 +43,8 @@ describe Fiddler::Ticket do
       before do
          @ticket = Fiddler::Ticket.get(4200)
       end
+
+      use_vcr_cassette "ticket-histories"
 
       it "should return an array of history items" do
          @ticket.histories.should be_a_kind_of(Array)

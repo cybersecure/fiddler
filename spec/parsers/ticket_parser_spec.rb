@@ -4,6 +4,8 @@ describe Fiddler::Parsers::TicketParser do
    before do
       test_config
    end
+
+   use_vcr_cassette "get-tickets"
    
    it "should return the response for proper request minus empty line" do
       response = Fiddler::ConnectionManager.get("/ticket/4200")
@@ -22,6 +24,8 @@ describe Fiddler::Parsers::TicketParser do
       response = Fiddler::ConnectionManager.get("/ticket/4200")
       Fiddler::Parsers::TicketParser.parse_single(response).should be_a_kind_of(Fiddler::Ticket)
    end
+
+   use_vcr_cassette "search-tickets"
 
    it "should give array of ticket objects for parse multiple method" do
       response = Fiddler::ConnectionManager.get("/search/ticket?query=Owner='jais.cheema'")

@@ -30,8 +30,9 @@ module Fiddler
 
       def attachments
          if @attachments == nil
+            @attachments = []
             attachment_ids.each do |id|
-               @attachments << Fiddler::Attachment.get(id)
+               @attachments << Fiddler::Attachment.get(id,ticket)
             end
          end
          @attachments
