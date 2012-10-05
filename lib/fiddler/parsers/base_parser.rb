@@ -18,6 +18,20 @@ module Fiddler
                lines
             end
          end
+
+         def self.tokenize_response(response)
+            tokens = Array.new
+            current = Array.new
+            response.each do |item|
+               if(item == "--")
+                  tokens << current
+                  current = Array.new
+                  next
+               end
+               current << item
+            end
+            tokens
+         end
       end
    end
 end

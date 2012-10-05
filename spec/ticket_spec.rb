@@ -33,4 +33,15 @@ describe Fiddler::Ticket do
          end 
       end
    end
+
+   describe "histories" do
+      before do
+         @ticket = Fiddler::Ticket.get(4200)
+      end
+
+      it "should return an array of history items" do
+         @ticket.histories.should be_a_kind_of(Array)
+         @ticket.histories.first.should be_a_kind_of(Fiddler::History)
+      end
+   end
 end

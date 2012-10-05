@@ -31,27 +31,13 @@ module Fiddler
          def self.ticket_from_response(response)
             result = {}
             response.each do |line|
-               matches = /^(.*?):\s(.*)/.match(line)
+               matches = /^(\S*?):\s(.*)/.match(line)
                if(matches)
                   key = matches[1].underscore
                   result[key] = matches[2]
                end
             end
             Fiddler::Ticket.new(result)
-         end
-
-         def self.tokenize_response(response)
-            tokens = Array.new
-            current = Array.new
-            response.each do |item|
-               if(item == "--")
-                  tokens << current
-                  current = Array.new
-                  next
-               end
-               current << item
-            end
-            tokens
          end
       end
    end

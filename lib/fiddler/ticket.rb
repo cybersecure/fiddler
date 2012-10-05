@@ -17,7 +17,7 @@ module Fiddler
          end
          @attributes.update(:id => 'ticket/new')
          @saved = false
-         @histories = []  
+         @histories = nil
          @new_record = true
          add_methods!
       end
@@ -39,6 +39,15 @@ module Fiddler
          end
       end
 
+      def histories
+         if @histories == nil
+            url = "ticket/#{id}/history"
+            response = Fiddler::ConnectionManager.get(url, {:format => "l"})
+            @histories = Fiddler::Parsers::HistoryParser.parse_multiple(response)
+         end
+         @histories
+      end
+
       # Class methods
       class << self
          # Gets the ticket with given id
@@ -49,6 +58,8 @@ module Fiddler
             url = "ticket/#{id}"
             response = Fiddler::ConnectionManager.get(url)
             ticket = Fiddler::Parsers::TicketParser.parse_single(response)
+            ticket.id = id
+            ticket
          end
 
          # Search the tickets with the given conditions
@@ -77,13 +88,6 @@ module Fiddler
          #
          # @returns [boolean] save succcessful or not
          def save
-         end
-
-         # Find the tickets with the given options
-         #
-         # @params [Hash] of options
-         # @returns [Array<Ticket>] of ticket matching the criteria
-         def find(options={})
          end
       end
    end
