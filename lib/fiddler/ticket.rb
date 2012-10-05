@@ -56,9 +56,14 @@ module Fiddler
          # @params [Hash] of conditions
          # @returns [Array<Ticket>] of the tickets matching the criteria
          def all(conditions={})
+            tickets = []
             url = "search/ticket"
-            response = Fiddler::ConnectionManager.get(url,Fiddler::Formatters::SearchRequestFormatter.format(conditions))
-            ticket = Fiddler::Parsers::TicketParser.parse_multiple(response)
+            request_hash = Fiddler::Formatters::SearchRequestFormatter.format(conditions)
+            unless request_hash.empty?
+               response = Fiddler::ConnectionManager.get(url,request_hash)
+               tickets = Fiddler::Parsers::TicketParser.parse_multiple(response)
+            end
+            tickets
          end
 
          # Creates a new ticket with the given options, it will not save the ticket

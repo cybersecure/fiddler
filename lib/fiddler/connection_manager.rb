@@ -4,31 +4,39 @@ module Fiddler
    module ConnectionManager
 
       class Connection
-         attr_accessor :client
+         attr_accessor :client, :logged_in
+
          def initialize
             @client = HTTPClient.new
             @client.set_cookie_store("cookies.dat")
+            @logged_in = false
+            login!
+         end
+
+         def get(path,options)
+            @client.get(url_for(path),options).content
+         end
+
+         def post(path,options)
+            @client.post(url_for(path),options).content
+         end
+
+         private 
+
+         def login!
+            unless @logged_in
+               # in here we can see if the cookie needs to be set or the username and pass needs to be posted across
+               post( base_url, :user => Fiddler.configuration.username, :pass => Fiddler.configuration.password )
+               @logged_in = true
+            end
          end
 
          def base_url
             "#{Fiddler.configuration.server_url}/REST/1.0/"
          end
 
-         def get(url,options)
-            url = "#{base_url}#{url}"
-            options = options_with_login(options)
-            @client.get(url,options).content
-         end
-
-         def post(url,options)
-            url = "#{base_url}#{url}"
-            @client.post(url,options_with_login(options)).content
-         end
-
-         def options_with_login(options)
-            unless Fiddler.configuration.use_cookies
-               options.merge({ :user => Fiddler.configuration.username, :pass => Fiddler.configuration.password })
-            end
+         def url_for(path)
+            "#{base_url}#{path}"
          end
       end
 
@@ -37,16 +45,12 @@ module Fiddler
 
          def get(url,options={})
             check_config
-            response = connection.get(url,options)
-            debug(response)
-            response
+            debug connection.get(url,options)
          end
 
          def post(url,options={})
             check_config
-            response = connection.post(url,options)
-            debug(response)
-            response
+            debug connection.post(url,options)
          end
 
          protected
@@ -64,7 +68,12 @@ module Fiddler
          end
 
          def debug(response)
-            puts response.inspect if ENV['DEBUG']
+            if defined?(Rails)
+               Rails.logger.debug response
+            elsif ENV['DEBUG']
+               puts response.inspect
+            end
+            return response
          end
       end # end class method definitions
    end # end ConnectionManager module definition

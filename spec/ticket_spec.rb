@@ -13,9 +13,24 @@ describe Fiddler::Ticket do
       expect { Fiddler::Ticket.get(50000) }.to raise_error(Fiddler::TicketNotFoundError)
    end
 
-   describe "executing all method" do
-      it "should return all the user assigned tickets for empty conditions" do
+   describe "searching tickets" do
+      it "should return empty array for empty conditions" do
          Fiddler::Ticket.all.should be_a_kind_of(Array)
+         Fiddler::Ticket.all.length.should eql(0)
+      end
+
+      it "should return all tickets owned by the user for owner query" do
+         tickets = Fiddler::Ticket.all(:owner => "jais.cheema")
+         tickets.each do |ticket|
+            ticket.owner.should eql("jais.cheema")
+         end
+      end
+
+      it "should be able to handle mutliple values for a condition" do
+         tickets = Fiddler::Ticket.all( :status => [:open, :resolved ])
+         tickets.each do |ticket|
+            ticket.status.should match(/open|resolved/)
+         end 
       end
    end
 end
