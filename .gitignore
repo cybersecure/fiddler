@@ -2,4 +2,5 @@
 log/*.log
 pkg/
 spec/config.rb
+spec/cassettes/*
 *.gem

@@ -19,33 +19,29 @@ Configuration
 
 For a Rails app, create an initializer files and for any other app, include this before using the gem.
 
-<pre>
-   <code>
-      Fiddler.configure do |config|
-         config.server_url = "request_tracker_url"
-         config.username = "some_user"
-         config.password = "some_password"
-      end
-   </code>
-</pre>
+<code>
+   Fiddler.configure do |config|
+      config.server_url = "request_tracker_url"
+      config.username = "some_user"
+      config.password = "some_password"
+   end
+</code>
 
 You can modify the settings on the fly as well using `Fiddler.configuration` variable.
 
 Using Cookies
 -------------
 
-Make sure you have RT-External Auth configuration properly to use cookies with Request Tracker.
+Make sure you have RT-External-Auth configured properly to use cookies with Request Tracker.
 Once that part has been done, change the config file to the following format.
 
-<pre>
-   <code>
-      Fiddler.configure do |config|
-         config.server_url = "request_tracker_url"
-         config.use_cookies = true
-         config.cookie_options = {:cookie_domain => "*.domainname", :login_cookie_key => "some_key_for_rt" }
-      end
-   </code>
-</pre>
+<code>
+   Fiddler.configure do |config|
+      config.server_url = "request_tracker_url"
+      config.use_cookies = true
+      config.cookie_options = {:cookie_domain => "*.domainname", :login_cookie_key => "some_key_for_rt" }
+   end
+</code>
 
 Once the configuration is done, cookie value can be set using `Fiddler.configuration.cookie_value` method.
 
