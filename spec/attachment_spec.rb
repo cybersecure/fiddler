@@ -8,6 +8,6 @@ describe Fiddler::Attachment do
    it "should return proper content" do
       @ticket = Fiddler::Ticket.get(4383)
       attachments = @ticket.histories.last.attachments
-      puts attachments.last.content
+      attachments.last.content.should_not be_nil
    end
 end

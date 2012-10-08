@@ -33,21 +33,33 @@ module Fiddler
             result = {}
             content_lines = []
             result["attachment_ids"] = []
+            collect_content = false
+            collect_attachments = false
             response.each do |line|
                matches = /^(\S*?):\s(.*)/.match(line)
                if(matches)
                   key = matches[1].underscore
                   result[key] = matches[2]
+                  if key == "content"
+                     collect_content = true
+                  elsif key == "attachments"
+                     collect_content = false
+                     collect_attachments = true
+                  end
                end
 
-               content_matches = /^\s{9}(.*)$/.match(line)
-               if(content_matches)
-                  content_lines << content_matches[1]
+               if collect_content
+                  content_matches = /^\s{9}(.*)$/.match(line)
+                  if(content_matches)
+                     content_lines << content_matches[1]
+                  end
                end
 
-               attachment_matches = /^\s{13}(.*?):\s(.*)/.match(line)
-               if(attachment_matches)
-                  result["attachment_ids"] << attachment_matches[1]
+               if collect_attachments
+                  attachment_matches = /^\s{13}(.*?):\s(.*)/.match(line)
+                  if(attachment_matches)
+                     result["attachment_ids"] << attachment_matches[1]
+                  end
                end
             end
             result["attachment_ids"].count.times { content_lines.pop }

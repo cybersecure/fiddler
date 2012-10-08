@@ -1,4 +1,5 @@
 require 'httpclient'
+require 'awesome_print'
 
 module Fiddler
    module ConnectionManager
@@ -32,11 +33,20 @@ module Fiddler
          end
 
          def base_url
-            "#{Fiddler.configuration.server_url}/REST/1.0/"
+            server_url = Fiddler.configuration.server_url
+            if server_url =~ /\/$/
+               "#{Fiddler.configuration.server_url}REST/1.0"
+            else
+               "#{Fiddler.configuration.server_url}/REST/1.0"
+            end
          end
 
          def url_for(path)
-            "#{base_url}#{path}"
+            if path =~ /^\//
+               "#{base_url}#{path}"
+            else
+               "#{base_url}/#{path}"
+            end
          end
       end
 
@@ -44,6 +54,7 @@ module Fiddler
          attr_accessor :client_connection
 
          def get(url,options={})
+            debug url
             check_config
             debug connection.get(url,options)
          end
@@ -71,7 +82,7 @@ module Fiddler
             if defined?(Rails)
                Rails.logger.debug response
             elsif ENV['DEBUG']
-               puts response.inspect
+               ap response.inspect
             end
             return response
          end
