@@ -23,6 +23,15 @@ module Fiddler
             return response.first.match(/^# Message recorded/)
          end
 
+         def self.parse_change_ownership_response(response)
+            response = check_response_code(response)
+            if response.first =~ /^# Owner changed from (\S+) to (\S+)/
+               return $2
+            else
+               return nil
+            end
+         end
+
          protected
 
          def self.check_for_errors(response)

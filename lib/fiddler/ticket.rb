@@ -79,6 +79,7 @@ module Fiddler
       protected
 
       def reply(method, comment, opt)
+         # make sure the options are only the valid ones.
          valid_options = [:cc, :bcc, :time_worked, :attachment, :status]
          opt.delete_if { |key,value| !valid_options.include?(key) }
 
@@ -89,9 +90,14 @@ module Fiddler
 
       def change_ownership(method)
          payload = { "Action" => method }
-         response = Fiddler::ConnectionManager.post("ticket/#{id}/take", payload.to_content_format)
-         puts response.inspect
-         #return Fiddler::Parsers::TicketParser.parse_single(response, method)
+         response = Fiddler::ConnectionManager.post("ticket/#{id}/take", :content => payload.to_content_format)
+         new_owner = Fiddler::Parsers::TicketParser.parse_change_ownership_response(response)
+         if new_owner
+            self.owner = new_owner
+            return true
+         else
+            return false
+         end
       end
 
       def create

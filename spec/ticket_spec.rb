@@ -30,6 +30,33 @@ describe Fiddler::Ticket do
       end
    end
 
+   describe "Changing ownership" do
+
+      use_vcr_cassette "change-ownership-steal"
+
+      it "should change the ownership to the current user for steal" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.steal
+         ticket.owner.should eql(Fiddler.configuration.username)
+      end
+
+      use_vcr_cassette "change-ownership-untake"
+
+      it "should change the ownership to the Nobody user for untake" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.untake
+         ticket.owner.should eql("Nobody")
+      end
+
+      use_vcr_cassette "change-ownership-take"
+
+      it "should change the ownership to the current user for take" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.take
+         ticket.owner.should eql(Fiddler.configuration.username)
+      end
+   end
+
    describe "searching tickets" do
       
       use_vcr_cassette "get-tickets"
