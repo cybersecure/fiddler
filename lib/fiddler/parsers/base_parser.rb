@@ -43,9 +43,13 @@ module Fiddler
             if String.method_defined?(:encode)
                response.encode!('UTF-8', 'UTF-8', :invalid => :replace)
             else
-               ic = Iconv.new('UTF-8', 'UTF-8//IGNORE')
-               response = ic.iconv(response)
+               begin
+                  Iconv.iconv("UTF-8//IGNORE", "UTF-8", response).join("")
+               rescue Exception => e
+                  raise IllegalCharacterError, "Attachment contains illegal characters"
+               end 
             end
+            response
          end
       end
    end

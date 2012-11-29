@@ -9,7 +9,7 @@ module Fiddler
 
          def self.parse_content(response)
             response = check_response_code(response,false)
-            return response
+            return response.join("\n")
          end
 
          protected
