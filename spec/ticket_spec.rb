@@ -5,10 +5,12 @@ describe Fiddler::Ticket do
       test_config
    end
    
-   use_vcr_cassette "get-tickets"
+   #use_vcr_cassette "get-tickets"
 
    it "should find a ticket with given id" do
-      Fiddler::Ticket.get(4200).should be_a_kind_of(Fiddler::Ticket)
+      ticket = Fiddler::Ticket.get(400)
+      ticket.should be_a_kind_of(Fiddler::Ticket)
+      puts ticket
    end
 
    it "should raise exception for invalid id" do

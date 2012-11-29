@@ -30,11 +30,20 @@ module Fiddler
 
          def self.ticket_from_response(response)
             result = {}
+            prev_key = nil
             response.each do |line|
                matches = /^(\S*?):\s(.*)/.match(line)
                if(matches)
                   key = matches[1].underscore
+                  prev_key = key
                   result[key] = matches[2]
+               else
+                  whitespace_matches = /^\s{12}(.*)/.match(line)
+                  if whitespace_matches and prev_key
+                     values = result[prev_key]
+                     values = values.split(",") unless values.is_a?(Array)
+                     result[prev_key] = values.concat(whitespace_matches[1].split(",")).collect { |x| x.strip }
+                  end
                end
             end
             Fiddler::Ticket.new(result)
