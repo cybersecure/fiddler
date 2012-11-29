@@ -5,21 +5,43 @@ describe Fiddler::Ticket do
       test_config
    end
    
-   #use_vcr_cassette "get-tickets"
+   describe "Replying to tickets" do
 
-   it "should find a ticket with given id" do
-      ticket = Fiddler::Ticket.get(400)
-      ticket.should be_a_kind_of(Fiddler::Ticket)
-      puts ticket
-   end
+      use_vcr_cassette "reply-to-tickets"
 
-   it "should raise exception for invalid id" do
-      expect { Fiddler::Ticket.get(50000) }.to raise_error(Fiddler::TicketNotFoundError)
+      it "should comment on a ticket" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.comment("nice comment").should be_true
+      end
+
+      it "should purge any useless options given with comment" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.comment("nice comment", :useless => true).should be_true
+      end
+
+      it "should be able to correspond" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.correspond("nice email").should be_true
+      end
+
+      it "should be able to comment with options" do
+         ticket = Fiddler::Ticket.get(4200)
+         ticket.correspond("nice email", :cc => "jaischeema@gmail.com", :time_worked => 10, :status => :open).should be_true
+      end
    end
 
    describe "searching tickets" do
       
-      use_vcr_cassette "search-tickets"
+      use_vcr_cassette "get-tickets"
+
+      it "should find a ticket with given id" do
+         ticket = Fiddler::Ticket.get(400)
+         ticket.should be_a_kind_of(Fiddler::Ticket)
+      end
+
+      it "should raise exception for invalid id" do
+         expect { Fiddler::Ticket.get(50000) }.to raise_error(Fiddler::TicketNotFoundError)
+      end
 
       it "should return empty array for empty conditions" do
          Fiddler::Ticket.all.should be_a_kind_of(Array)

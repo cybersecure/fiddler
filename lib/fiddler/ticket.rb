@@ -52,6 +52,63 @@ module Fiddler
          @histories
       end
 
+      def comment(comment, opt = {})
+         reply('Comment', comment, opt)
+      end
+
+      def correspond(comment, opt = {})
+         reply('Correspond', comment, opt)
+      end
+
+      def steal
+         change_ownership "Steal"
+      end
+
+      def take
+         change_ownership "Steal"
+      end
+
+      def untake
+         change_ownership "Untake"
+      end
+
+      def save
+         id == "ticket/new" ? create : update
+      end
+
+      protected
+
+      def reply(method, comment, opt)
+         valid_options = [:cc, :bcc, :time_worked, :attachment, :status]
+         opt.delete_if { |key,value| !valid_options.include?(key) }
+
+         payload = { :text => comment, :action => method}.merge(opt)
+         response = Fiddler::ConnectionManager.post("ticket/#{id}/comment", :content => payload.to_content_format)
+         return Fiddler::Parsers::TicketParser.parse_reply_response(response)
+      end
+
+      def change_ownership(method)
+         payload = { "Action" => method }
+         response = Fiddler::ConnectionManager.post("ticket/#{id}/take", payload.to_content_format)
+         puts response.inspect
+         #return Fiddler::Parsers::TicketParser.parse_single(response, method)
+      end
+
+      def create
+         response = Fiddler::ConnectionManager.post("ticket/new", @attributes.to_content_format)
+         puts response.inspect
+         #return Fiddler::Parsers::TicketParser.parse_single(response, :create)
+      end
+
+      def update
+         payload = @attributes.clone
+         payload.delete("text")
+         payload.delete("id") 
+         response = Fiddler::ConnectionManager.post("ticket/#{id}/edit", payload.to_content_format)
+         puts response.inspect
+         #return Fiddler::Parsers::TicketParser.parse_single(response, :update)
+      end
+
       # Class methods
       class << self
          # Gets the ticket with given id
@@ -86,12 +143,6 @@ module Fiddler
          # @params [Hash] of the options to be added to the new ticket
          # @returns [Ticket] returns new ticket object
          def create(options)
-         end
-
-         # Saves the changes to the ticket object
-         #
-         # @returns [boolean] save succcessful or not
-         def save
          end
       end
    end

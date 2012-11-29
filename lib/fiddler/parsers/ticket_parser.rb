@@ -18,6 +18,11 @@ module Fiddler
             tickets
          end
 
+         def self.parse_reply_response(response)
+            response = check_response_code(response)
+            return response.first.match(/^# Message recorded/)
+         end
+
          protected
 
          def self.check_for_errors(response)

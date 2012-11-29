@@ -18,7 +18,7 @@ module Fiddler
             @client.get(url_for(path),options).content
          end
 
-         def post(path,options,logging_in=false)
+         def post(path,options)
             @client.post(url_for(path),options).content
          end
 
