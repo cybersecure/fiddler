@@ -17,12 +17,12 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'httpclient', '2.2.7'
-  s.add_dependency 'activesupport', '3.2.8'
+  s.add_dependency 'activesupport'
+  s.add_dependency 'awesome_print'
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'spork'
   s.add_development_dependency 'watchr'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'vcr'
-  s.add_development_dependency 'awesome_print'
 end

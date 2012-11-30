@@ -4,6 +4,30 @@ describe Fiddler::Ticket do
    before do
       test_config
    end
+
+   describe "Creating tickets" do
+      describe "new empty ticket" do
+         before do
+            @ticket = Fiddler::Ticket.new
+         end
+
+         it "should have a valid id" do
+            @ticket.id.should eql("ticket/new")
+         end
+
+         it "should not be valid" do
+            @ticket.should_not be_valid
+         end
+
+         it "should return false for save" do
+            @ticket.save.should be_false
+         end
+
+         it "should populate the errors hash with the errors" do
+            @ticket.errors.should_not be_empty
+         end
+      end
+   end
    
    describe "Replying to tickets" do
 
@@ -36,7 +60,7 @@ describe Fiddler::Ticket do
 
       it "should change the ownership to the current user for steal" do
          ticket = Fiddler::Ticket.get(4200)
-         ticket.steal
+         ticket.steal.should_not be_nil
          ticket.owner.should eql(Fiddler.configuration.username)
       end
 
@@ -44,7 +68,7 @@ describe Fiddler::Ticket do
 
       it "should change the ownership to the Nobody user for untake" do
          ticket = Fiddler::Ticket.get(4200)
-         ticket.untake
+         ticket.untake.should_not be_nil
          ticket.owner.should eql("Nobody")
       end
 
@@ -52,7 +76,7 @@ describe Fiddler::Ticket do
 
       it "should change the ownership to the current user for take" do
          ticket = Fiddler::Ticket.get(4200)
-         ticket.take
+         ticket.take.should_not be_nil
          ticket.owner.should eql(Fiddler.configuration.username)
       end
    end
@@ -64,6 +88,7 @@ describe Fiddler::Ticket do
       it "should find a ticket with given id" do
          ticket = Fiddler::Ticket.get(400)
          ticket.should be_a_kind_of(Fiddler::Ticket)
+         ticket.id.should eql(400)
       end
 
       it "should raise exception for invalid id" do

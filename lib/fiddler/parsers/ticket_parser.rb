@@ -20,7 +20,7 @@ module Fiddler
 
          def self.parse_reply_response(response)
             response = check_response_code(response)
-            return response.first.match(/^# Message recorded/)
+            return response.first.match(/^# Message recorded/).nil?
          end
 
          def self.parse_change_ownership_response(response)
@@ -60,7 +60,14 @@ module Fiddler
                   end
                end
             end
-            Fiddler::Ticket.new(result)
+            begin
+               id = result['id'].scan(/^ticket\/(\d*)$/).first.first.to_i
+            rescue
+               raise RequestError, "Unexpected response for id : #{result['id']}"
+            end
+            ticket = Fiddler::Ticket.new(result)
+            ticket.id = id
+            return ticket
          end
       end
    end

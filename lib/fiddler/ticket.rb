@@ -5,6 +5,7 @@ module Fiddler
       RequiredAttributes = %w(queue subject)
 
       attr_reader :histories, :saved
+      attr_accessor :errors
       
       # Initializes a new instance of ticket object
       #
@@ -19,6 +20,7 @@ module Fiddler
          @saved = false
          @histories = nil
          @new_record = true
+         @errors = Hash.new
          add_methods!
       end
 
@@ -52,6 +54,18 @@ module Fiddler
          @histories
       end
 
+      def valid?
+         valid = true
+         RequiredAttributes.each do |attribute|
+            if self.send("#{attribute}").nil?
+               valid = false
+               errors[attribute] = "#{attribute} cannot be empty"
+            end
+            # else delete the key
+         end
+         valid
+      end
+
       def comment(comment, opt = {})
          reply('Comment', comment, opt)
       end
@@ -73,7 +87,7 @@ module Fiddler
       end
 
       def save
-         id == "ticket/new" ? create : update
+         valid? ? (id == "ticket/new" ? create : update) : false
       end
 
       protected
@@ -94,9 +108,9 @@ module Fiddler
          new_owner = Fiddler::Parsers::TicketParser.parse_change_ownership_response(response)
          if new_owner
             self.owner = new_owner
-            return true
+            return self
          else
-            return false
+            return nil
          end
       end
 
@@ -125,7 +139,6 @@ module Fiddler
             url = "ticket/#{id}"
             response = Fiddler::ConnectionManager.get(url)
             ticket = Fiddler::Parsers::TicketParser.parse_single(response)
-            ticket.id = id
             ticket
          end
 
