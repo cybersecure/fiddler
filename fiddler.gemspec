@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'httpclient', '2.2.7'
   s.add_dependency 'activesupport'
   s.add_dependency 'awesome_print'
+  s.add_dependency 'active_attr'
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'spork'

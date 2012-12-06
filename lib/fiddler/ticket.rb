@@ -1,6 +1,7 @@
 module Fiddler
    class Ticket
-
+      include ActiveAttr::BasicModel
+      
       DefaultAttributes = %w(queue owner creator subject status priority initial_priority final_priority requestors cc admin_cc created starts started due resolved told last_updated time_estimated time_worked time_left text).inject({}){|memo, k| memo[k] = nil; memo}
       RequiredAttributes = %w(queue subject)
 
