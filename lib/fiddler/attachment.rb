@@ -30,18 +30,22 @@ module Fiddler
          end
       end
 
+      def content_length
+         length = 0
+         headers.each do |header_line|
+            (key,value) = header_line.split(":")
+            if key == "Content-Length"
+               length = value.to_i
+               break
+            end
+         end
+         return length
+      end
+
       def content
          if @content == nil
-            content_length = 0
-            headers.each do |header_line|
-               (key,value) = header_line.split(":")
-               if key == "Content-Length"
-                  content_length = value.to_i
-                  break
-               end
-            end
             if content_length > 0
-               unless has_text_content or path == nil
+               if not has_text_content and File.exists?(path)
                   @content = ""
                   return @content
                end
@@ -57,22 +61,14 @@ module Fiddler
       end
 
       def path
-         if @path == nil
-            file_path = "#{Fiddler.configuration.attachments_path}/#{filename}"
-            @path = if File.exists?(file_path)
-               @path = file_path
-            else
-               nil
-            end
-         end
+         "#{Fiddler.configuration.attachments_path}/#{filename}"
       end
 
       def save_content_to_file
-         file_path = "#{Fiddler.configuration.attachments_path}/#{filename}"
-         if File.exists?(file_path)
-            File.unlink(file_path)
+         if File.exists?(path)
+            File.unlink(path)
          end
-         File.open(file_path, "w") { |f| f.write(@content) }
+         File.open(path, "w") { |f| f.write(@content) }
          @content = ""
       end
 
