@@ -24,9 +24,15 @@ describe Fiddler::Ticket do
          end
 
          it "should populate the errors hash with the errors" do
-            @ticket.errors.should_not be_empty
+            @ticket.errors.full_messages.should_not be_empty
          end
       end
+   end
+
+   it "should show the validation errors" do
+      t = Fiddler::Ticket.new
+      t.should_not be_valid
+      puts t.errors.full_messages.empty?
    end
    
    describe "Replying to tickets" do

@@ -1,41 +1,35 @@
 require 'active_attr'
 module Fiddler
    class Ticket
-      include ActiveAttr::BasicModel
-      
-      DefaultAttributes = %w(queue owner creator subject status priority initial_priority final_priority requestors cc admin_cc created starts started due resolved told last_updated time_estimated time_worked time_left text).inject({}){|memo, k| memo[k] = nil; memo}
-      RequiredAttributes = %w(queue subject)
+      include ActiveAttr::Model
 
-      attr_reader :histories, :saved
-      attr_accessor :errors
-      
-      # Initializes a new instance of ticket object
-      #
-      # @params [Hash] of the initial options
-      def initialize(attributes={})
-         if attributes
-            @attributes = DefaultAttributes.merge(attributes)
-         else
-            @attributes = DefaultAttributes
-         end
-         @attributes.update(:id => 'ticket/new')
-         @saved = false
-         @histories = nil
-         @new_record = true
-         @errors = Hash.new
-         add_methods!
-      end
+      attribute :id, :default => 'ticket/new'
+      attribute :queue
+      attribute :owner
+      attribute :creator
+      attribute :subject
+      attribute :status
+      attribute :priority
+      attribute :initial_priority
+      attribute :final_priority
+      attribute :requestors
+      attribute :cc
+      attribute :admin_cc
+      attribute :created
+      attribute :starts
+      attribute :started
+      attribute :due
+      attribute :resolved
+      attribute :told
+      attribute :last_updated
+      attribute :time_estimated
+      attribute :time_worked
+      attribute :time_left
+      attribute :text
 
-      def add_methods!
-         @attributes.each do |key, value|
-            (class << self; self; end).send :define_method, key do
-               return @attributes[key]
-            end
-            (class << self; self; end).send :define_method, "#{key}=" do |new_val|
-               @attributes[key] = new_val
-            end
-         end
-      end
+      attribute :new_record, :default => true
+
+      validates_presence_of :id, :queue, :subject
 
       def to_s
          @attributes.each do |key,value|
@@ -54,18 +48,6 @@ module Fiddler
             @histories = Fiddler::Parsers::HistoryParser.parse_multiple(response)
          end
          @histories
-      end
-
-      def valid?
-         valid = true
-         RequiredAttributes.each do |attribute|
-            if self.send("#{attribute}").nil?
-               valid = false
-               errors[attribute] = "#{attribute} cannot be empty"
-            end
-            # else delete the key
-         end
-         valid
       end
 
       def comment(comment, opt = {})
@@ -89,7 +71,7 @@ module Fiddler
       end
 
       def save
-         valid? ? (id == "ticket/new" ? create : update) : false
+         id == "ticket/new" ? create : update
       end
 
       protected
