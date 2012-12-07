@@ -1,3 +1,4 @@
+require 'active_attr'
 module Fiddler
    class Ticket
       include ActiveAttr::BasicModel
