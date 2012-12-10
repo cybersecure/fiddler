@@ -63,7 +63,7 @@ module Fiddler
                   @path = nil
                else
                   @path = full_path_for_filename
-                  if File.exists?(path)
+                  if File.exists?(@path)
                      @content = ""
                   else
                      load_content
@@ -96,7 +96,7 @@ module Fiddler
       end
 
       def save_content_to_file
-         File.open(path, "w") { |f| f.write(@content) }
+         File.open(full_path_for_filename, "w") { |f| f.write(@content) }
          @content = ""
       end
 
