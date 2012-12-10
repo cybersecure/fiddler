@@ -23,4 +23,18 @@ describe Fiddler::Parsers::BaseParser do
 
       Fiddler::Parsers::BaseParser.check_response_code(response).length.should eql(response_array.length-1)
    end
+
+   it "should return proper number of tokens for length response" do
+      response = <<-eos
+some response
+--
+some second response
+--
+some thrid response
+--
+the final response
+      eos
+      response = response.split("\n")
+      Fiddler::Parsers::BaseParser.tokenize_response(response).count.should eql(4)
+   end
 end

@@ -33,6 +33,7 @@ module Fiddler
                end
                current << item
             end
+            tokens << current unless current.empty?
             tokens
          end
 
