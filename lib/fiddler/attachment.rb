@@ -1,75 +1,43 @@
+require 'active_attr'
 module Fiddler
    class Attachment
-      DefaultAttributes = %w(id subject creator created transaction parent message_id filename content_type content_encoding headers).inject({}){|memo, k| memo[k] = nil; memo}
+      include ActiveAttr::Model
+
+      attribute :id
+      attribute :subject
+      attribute :creator
+      attribute :created
+      attribute :transaction
+      attribute :parent
+      attribute :message_id
+      attribute :filename
+      attribute :content_type
+      attribute :content_encoding
+      attribute :headers
       
       attr_accessor :ticket_id, :content, :path
-      
-      # Initializes a new instance of history object
-      #
-      # @params [Hash] of the initial options
-      def initialize(attributes={})
-         if attributes
-            @attributes = DefaultAttributes.merge(attributes)
-         else
-            @attributes = DefaultAttributes
-         end
-         @ticket_id = nil
-         @content = nil
-         @path = nil
-         add_methods!
-      end
 
-      def add_methods!
-         @attributes.each do |key, value|
-            (class << self; self; end).send :define_method, key do
-               return @attributes[key]
-            end
-            (class << self; self; end).send :define_method, "#{key}=" do |new_val|
-               @attributes[key] = new_val
-            end
-         end
+      # Public class method to get an attachment
+      def self.get(id, ticket_id)
+         url = "/ticket/#{ticket_id}/attachments/#{id}"
+         response = Fiddler::ConnectionManager.get(url)
+         attachment = Fiddler::Parsers::AttachmentParser.parse_single(response)
+         attachment.ticket_id = ticket_id
+         attachment
       end
 
       def content_length
-         length = 0
-         headers.each do |header_line|
-            (key,value) = header_line.split(":")
-            if key == "Content-Length"
-               length = value.to_i
-               break
-            end
-         end
-         return length
+         header_value_for_key("Content-Length").to_i
       end
 
       def content
-         if @content == nil
-            if content_length > 0
-               if not has_text_content and File.exists?(path)
-                  @content = ""
-                  return @content
-               end
-               url = "/ticket/#{ticket_id}/attachments/#{id}/content"
-               response = Fiddler::ConnectionManager.get(url)
-               @content = Fiddler::Parsers::AttachmentParser.parse_content(response)
-               save_content_to_file unless has_text_content
-            else
-               @content = ""
-            end
-         end
+         populate_data
          @content
       end
 
       def path
-         "#{Fiddler.configuration.attachments_path}/#{filename}"
-      end
-
-      def save_content_to_file
-         if File.exists?(path)
-            File.unlink(path)
-         end
-         File.open(path, "w") { |f| f.write(@content) }
-         @content = ""
+         populate_data
+         @path
       end
 
       def has_text_content
@@ -80,16 +48,60 @@ module Fiddler
          end
       end
 
-      def self.get(id, ticket_id)
-         url = "/ticket/#{ticket_id}/attachments/#{id}"
-         response = Fiddler::ConnectionManager.get(url)
-         attachment = Fiddler::Parsers::AttachmentParser.parse_single(response)
-         attachment.ticket_id = ticket_id
-         attachment
-      end
-
       def to_s
          puts @attributes.inspect
+      end
+
+      protected
+
+      def populate_data
+         @data_populated ||= false
+         unless @data_populated
+            if content_length > 0
+               if has_text_content
+                  load_content
+                  @path = nil
+               else
+                  @path = full_path_for_filename
+                  if File.exists?(path)
+                     @content = ""
+                  else
+                     load_content
+                     save_content_to_file
+                  end
+               end
+            else
+               @content = ""
+            end
+            @data_populated = true
+         end
+      end
+
+      def load_content
+         url = "/ticket/#{ticket_id}/attachments/#{id}/content"
+         response = Fiddler::ConnectionManager.get(url)
+         @content = Fiddler::Parsers::AttachmentParser.parse_content(response)
+      end
+
+      def header_value_for_key(header_key)
+         final_value = nil
+         headers.each do |header_line|
+            (key,value) = header_line.split(":")
+            if header_key == key
+               final_value = value
+               break
+            end
+         end
+         return final_value
+      end
+
+      def save_content_to_file
+         File.open(path, "w") { |f| f.write(@content) }
+         @content = ""
+      end
+
+      def full_path_for_filename
+         "#{Fiddler.configuration.attachments_path}/#{filename}"
       end
    end
 end

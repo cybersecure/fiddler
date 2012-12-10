@@ -1,32 +1,23 @@
+require 'active_attr'
 module Fiddler
    class History
-      DefaultAttributes = %w(id ticket time_taken type field old_value new_value data description content creator created attachment_ids).inject({}){|memo, k| memo[k] = nil; memo}
+      include ActiveAttr::Model
+
+      attribute :id
+      attribute :ticket
+      attribute :time_taken
+      attribute :type
+      attribute :field
+      attribute :old_value
+      attribute :new_value
+      attribute :data
+      attribute :description
+      attribute :content
+      attribute :creator
+      attribute :created
+      attribute :attachment_ids
       
       attr_reader :attachments
-      
-      # Initializes a new instance of history object
-      #
-      # @params [Hash] of the initial options
-      def initialize(attributes={})
-         if attributes
-            @attributes = DefaultAttributes.merge(attributes)
-         else
-            @attributes = DefaultAttributes
-         end
-         @attachments = nil
-         add_methods!
-      end
-
-      def add_methods!
-         @attributes.each do |key, value|
-            (class << self; self; end).send :define_method, key do
-               return @attributes[key]
-            end
-            (class << self; self; end).send :define_method, "#{key}=" do |new_val|
-               @attributes[key] = new_val
-            end
-         end
-      end
 
       def attachments
          if @attachments == nil
