@@ -55,10 +55,6 @@ module Fiddler
          end
       end
 
-      def to_s
-         puts @attributes.inspect
-      end
-
       protected
 
       def populate_data
@@ -108,7 +104,7 @@ module Fiddler
       end
 
       def full_path_for_filename
-         "#{Fiddler.configuration.attachments_path}/#{filename}"
+         "#{Fiddler.configuration.attachments_path}/#{id}-#{filename}"
       end
    end
 end

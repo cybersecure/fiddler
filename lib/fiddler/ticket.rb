@@ -31,16 +31,6 @@ module Fiddler
 
       validates_presence_of :id, :queue, :subject
 
-      def to_s
-         @attributes.each do |key,value|
-            if value.is_a?(Array) or value.is_a?(Hash)
-               puts "#{key} : #{value.inspect}"
-            else
-               puts "#{key} : #{value}"
-            end
-         end
-      end
-
       def histories
          if @histories == nil
             url = "ticket/#{id}/history"
