@@ -88,10 +88,12 @@ module Fiddler
          end
 
          def debug(response)
-            if defined?(Rails)
-               Rails.logger.debug response
-            elsif ENV['DEBUG']
-               ap response.inspect
+            if ENV['DEBUG'] or Fiddler.configuration.debug_response
+               if defined?(Rails)
+                  Rails.logger.debug response
+               else
+                  ap response
+               end
             end
             return response
          end
