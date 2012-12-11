@@ -28,7 +28,7 @@ describe Fiddler::Parsers::TicketParser do
    use_vcr_cassette "search-tickets"
 
    it "should give array of ticket objects for parse multiple method" do
-      response = Fiddler::ConnectionManager.get("/search/ticket?query=Owner='jais.cheema'")
+      response = Fiddler::ConnectionManager.get("/search/ticket?query=Owner='jais.cheema'&format=l")
       Fiddler::Parsers::TicketParser.parse_multiple(response).should be_a_kind_of(Array)
    end
 end

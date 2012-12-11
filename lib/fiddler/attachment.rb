@@ -27,7 +27,14 @@ module Fiddler
       end
 
       def content_length
-         header_value_for_key("Content-Length").to_i
+         length = header_value_for_key("Content-Length")
+         if !length.nil?
+            length.to_i
+         elsif @content.nil?
+            -1
+         else
+            @content.length
+         end
       end
 
       def content
@@ -57,7 +64,7 @@ module Fiddler
       def populate_data
          @data_populated ||= false
          unless @data_populated
-            if content_length > 0
+            if content_length != 0
                if has_text_content
                   load_content
                   @path = nil
