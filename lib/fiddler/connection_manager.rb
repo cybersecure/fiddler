@@ -11,14 +11,15 @@ module Fiddler
             @client = HTTPClient.new
             @client.set_cookie_store("cookies.dat")
             @logged_in = false
-            login!
          end
 
          def get(path,options)
+            login! unless @logged_in
             @client.get(url_for(path),options).content
          end
 
          def post(path,options)
+            login! unless @logged_in
             @client.post(url_for(path),options).content
          end
 
@@ -26,8 +27,16 @@ module Fiddler
 
          def login!
             unless @logged_in
-               # in here we can see if the cookie needs to be set or the username and pass needs to be posted across
-               post( base_url, :user => Fiddler.configuration.username, :pass => Fiddler.configuration.password )
+               if Fiddler.configuration.use_cookies
+                  cookie = WebAgent::Cookie.new
+                  cookie.name = Fiddler.configuration.request_tracker_key
+                  cookie.value = Fiddler.configuration.cookie_value
+                  cookie.url = URI.parse(Fiddler.configuration.server_url)
+                  cookie.domain_orig = Fiddler.configuration.cookie_domain
+                  @client.cookie_manager.add(cookie)
+               else
+                  @client.post(url_for(base_url), :user => Fiddler.configuration.username, :pass => Fiddler.configuration.password )
+               end
                @logged_in = true
             end
          end
