@@ -23,6 +23,13 @@ module Fiddler
             @client.post(url_for(path),options).content
          end
 
+         def post_content(path,options)
+            login! unless @logged_in
+            puts options.inspect
+            puts url_for(path)
+            @client.post_content(url_for(path),options)
+         end
+
          private 
 
          def login!
@@ -73,6 +80,11 @@ module Fiddler
             debug connection.post(url,options)
          end
 
+         def post_content(url,options={})
+            check_config
+            debug connection.post_content(url,options)
+         end
+
          protected
 
          def check_config
@@ -81,6 +93,11 @@ module Fiddler
             if config.username.blank? or config.password.blank?
                raise InvalidConfigurationError unless config.use_cookies
             end
+            if config.use_cookies
+               unless Fiddler.configuration.request_tracker_key and Fiddler.configuration.cookie_value and Fiddler.configuration.cookie_domain
+                  raise InvalidConfigurationError
+               end
+            end 
          end
 
          def connection

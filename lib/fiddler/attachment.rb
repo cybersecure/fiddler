@@ -1,5 +1,30 @@
 require 'active_attr'
 module Fiddler
+   class AttachmentCollection < Array
+      def to_payload
+         hash = Hash.new
+         self.each_with_index do |attach, index|
+            hash["attachment_#{index+1}"] = attach
+         end
+         hash
+      end
+
+      def self.fill(*args)
+         attachments = AttachmentCollection.new
+         args.each do |attachment|
+            if attachment.is_a?(File)
+               attachments << attachment
+            elsif attachment.is_a?(String)
+               attachments << File.new(attachment)
+            elsif attachment.respond_to?(:open, :original_filename)
+               attachments << attachment
+            end
+         end
+         attachments
+      end
+   end
+   
+   # the attachment in itself
    class Attachment
       include ActiveAttr::Model
 

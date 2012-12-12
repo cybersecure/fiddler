@@ -40,6 +40,20 @@ module Fiddler
          @histories
       end
 
+      # Add a comment to a ticket
+      # Example:
+      #   tix = Ticket.get(1000)
+      #   tix.comment("This is a comment", :time_worked => 45, :cc => 'someone@example.com')
+      #
+      #   Attachments
+      #   tix.comment("This is a comment", :attachments => "/tmp/filename.txt")
+      #
+      #   Attachment as a file descriptor
+      #   tix.correspond("This is a comment", :attachments => File.new("/tmp/filename.txt"))
+      #
+      #   Attachment as a ActionDispatch::Http::UploadedFile instance
+      #   tix.comment("This is a comment", :attachments => [params[:attachment_1], params[:attachment_2]])
+      #
       def comment(comment, opt = {})
          reply('Comment', comment, opt)
       end
@@ -68,11 +82,16 @@ module Fiddler
 
       def reply(method, comment, opt)
          # make sure the options are only the valid ones.
-         valid_options = [:cc, :bcc, :time_worked, :attachment, :status]
+         valid_options = [:cc, :bcc, :time_worked, :attachments, :status]
          opt.delete_if { |key,value| !valid_options.include?(key) }
 
-         payload = { :text => comment, :action => method}.merge(opt)
-         response = Fiddler::ConnectionManager.post("ticket/#{id}/comment", :content => payload.to_content_format)
+         payload = { :text => comment, :action => method}.merge(opt).delete(:attachments)
+
+         attachments = Fiddler::AttachmentCollection.fill(opt[:attachments])
+         payload.merge!(:attachment => attachments.map(&:basename).join(",")) unless attachments.empty?
+
+         response = Fiddler::ConnectionManager.post_content("ticket/#{id}/comment", { :content => payload.to_content_format }.merge(attachments.to_payload) )
+
          return Fiddler::Parsers::TicketParser.parse_reply_response(response)
       end
 

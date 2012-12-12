@@ -20,7 +20,7 @@ module Fiddler
 
          def self.parse_reply_response(response)
             response = check_response_code(response)
-            return response.first.match(/^# Message recorded/).nil?
+            return !response.first.match(/^# Message recorded/).nil?
          end
 
          def self.parse_change_ownership_response(response)
