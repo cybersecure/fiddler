@@ -25,8 +25,8 @@ describe Fiddler::Parsers::HistoryParser do
    use_vcr_cassette "ticket-histories-count"
 
    it "should return a proper number of histories for a ticket" do
-      response = Fiddler::ConnectionManager.get("/ticket/3399/history?format=l")
+      response = Fiddler::ConnectionManager.get("/ticket/400/history?format=l")
       histories = Fiddler::Parsers::HistoryParser.parse_multiple(response)
-      histories.count.should eql(28)
+      histories.count.should eql(13)
    end
 end

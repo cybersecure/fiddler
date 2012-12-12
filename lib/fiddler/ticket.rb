@@ -85,7 +85,8 @@ module Fiddler
          valid_options = [:cc, :bcc, :time_worked, :attachments, :status]
          opt.delete_if { |key,value| !valid_options.include?(key) }
 
-         payload = { :text => comment, :action => method}.merge(opt).delete(:attachments)
+         payload = { :text => comment, :action => method}.merge(opt)
+         payload.delete(:attachments)
 
          attachments = Fiddler::AttachmentCollection.fill(opt[:attachments])
          payload.merge!(:attachment => attachments.map(&:basename).join(",")) unless attachments.empty?

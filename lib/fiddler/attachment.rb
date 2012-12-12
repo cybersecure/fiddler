@@ -10,17 +10,15 @@ module Fiddler
       end
 
       def self.fill(*args)
-         attachments = AttachmentCollection.new
-         args.each do |attachment|
+         AttachmentCollection.new Array(args.compact).flatten.map { |attachment|
             if attachment.is_a?(File)
-               attachments << attachment
+               attachment
             elsif attachment.is_a?(String)
-               attachments << File.new(attachment)
+               File.new(attachment)
             elsif attachment.respond_to?(:open, :original_filename)
-               attachments << attachment
+               attachment
             end
-         end
-         attachments
+         }.compact
       end
    end
    
