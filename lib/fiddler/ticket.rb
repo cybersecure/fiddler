@@ -93,7 +93,15 @@ module Fiddler
 
          response = Fiddler::ConnectionManager.post_content("ticket/#{id}/comment", { :content => payload.to_content_format }.merge(attachments.to_payload) )
 
-         return Fiddler::Parsers::TicketParser.parse_reply_response(response)
+         result = Fiddler::Parsers::TicketParser.parse_reply_response(response)
+
+         # update the ticket parameters if the action was successful
+         if result and opt.has_key?(:status)
+            self.status = opt[:status]
+            result
+         else
+            result
+         end
       end
 
       def change_ownership(method)

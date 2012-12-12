@@ -37,7 +37,7 @@ describe Fiddler::Ticket do
    
    describe "Replying to tickets" do
 
-      use_vcr_cassette "reply-to-tickets"
+      #use_vcr_cassette "reply-to-tickets"
 
       it "should comment on a ticket" do
          ticket = Fiddler::Ticket.get(4200)
@@ -57,6 +57,12 @@ describe Fiddler::Ticket do
       it "should be able to comment with options" do
          ticket = Fiddler::Ticket.get(4200)
          ticket.correspond("nice email", :cc => "jaischeema@gmail.com", :time_worked => 10, :status => :open).should be_true
+      end
+
+      it "should update the status of the ticket if given in options" do
+         ticket = Fiddler::Ticket.get(3300)
+         ticket.comment("Something right here", :status => :stalled)
+         ticket.status.should eql(:stalled)
       end
    end
 
