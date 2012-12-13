@@ -1,5 +1,5 @@
 class File
-   def basename
+   def name
       File.basename(path)
    end
 end

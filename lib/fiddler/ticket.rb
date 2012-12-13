@@ -89,7 +89,7 @@ module Fiddler
          payload.delete(:attachments)
 
          attachments = Fiddler::AttachmentCollection.fill(opt[:attachments])
-         payload.merge!(:attachment => attachments.map(&:basename).join(",")) unless attachments.empty?
+         payload.merge!(:attachment => attachments.map(&:name).join(",")) unless attachments.empty?
 
          response = Fiddler::ConnectionManager.post_content("ticket/#{id}/comment", { :content => payload.to_content_format }.merge(attachments.to_payload) )
 

@@ -12,13 +12,22 @@ module Fiddler
       def self.fill(*args)
          AttachmentCollection.new Array(args.compact).flatten.map { |attachment|
             if attachment.is_a?(File)
-               attachment
+               AttachmentFile.new(attachment.path)
             elsif attachment.is_a?(String)
-               File.new(attachment)
-            elsif attachment.respond_to?(:open, :original_filename)
-               attachment
+               AttachmentFile.new(attachment)
+            elsif attachment.is_a?(ActionDispatch::Http::UploadedFile)
+               AttachmentFile.new(attachment.tempfile.path, attachment.original_filename)
             end
          }.compact
+      end
+   end
+
+   class AttachmentFile < File
+      attr_accessor :name
+
+      def initialize(path,name=nil)
+         super(path)
+         @name = name || File.basename(path)
       end
    end
    
