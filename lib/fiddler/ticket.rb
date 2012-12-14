@@ -76,7 +76,7 @@ module Fiddler
       end
 
       def take
-         change_ownership "Steal"
+         change_ownership "Take"
       end
 
       def untake
