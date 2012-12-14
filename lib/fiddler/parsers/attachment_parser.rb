@@ -8,7 +8,7 @@ module Fiddler
          end
 
          def self.parse_content(response)
-            response = check_response_code(response,false)
+            response = check_response_code(response,false,false)
             return response.join("\n")
          end
 

@@ -5,12 +5,16 @@ module Fiddler
          SUCCESS_CODES = (200..299).to_a
          ERROR_CODES = (400..499).to_a
          
-         def self.check_response_code(response, reject_blank_lines=true)
+         def self.check_response_code(response, reject_blank_lines=true, raise_error_for_empty_response=true)
             response = safe_encode(response)
             lines = response.split("\n")
             lines = lines.delete_if { |l| l.nil? or l == "" } if reject_blank_lines
             if lines.count == 0
-               raise RequestError, "Empty Response"
+               if raise_error_for_empty_response
+                  raise RequestError, "Empty Response"
+               else
+                  return []
+               end
             else
                status_line = lines.shift
                version, status_code, status_text = status_line.split(/\s+/,2)
