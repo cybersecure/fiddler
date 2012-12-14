@@ -32,6 +32,15 @@ module Fiddler
             end
          end
 
+         def self.parse_update_response(response, method)
+            response = check_response_code(response)
+            if method == :create
+               return response.first =~ /^# Ticket (\S+) created/ ? $1 : nil
+            elsif method == :update
+               return response.first =~ /^# Ticket (\S+) updated/ ? $1 : nil
+            end
+         end
+
          protected
 
          def self.check_for_errors(response)

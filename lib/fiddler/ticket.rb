@@ -27,8 +27,6 @@ module Fiddler
       attribute :time_left
       attribute :text
 
-      attribute :new_record, :default => true
-
       validates_presence_of :id, :queue, :subject
 
       def histories
@@ -38,6 +36,17 @@ module Fiddler
             @histories = Fiddler::Parsers::HistoryParser.parse_multiple(response)
          end
          @histories
+      end
+
+      # make the setting and getting of requestors easier
+      def requestor_array
+         self.requestors.split(",").collect { |x| x.strip }
+      end
+
+      def requestor_array=(requestor_array)
+         if requestor_array.is_a?(Array)
+            self.requestors = requestor_array.join(", ")
+         end
       end
 
       # Add a comment to a ticket
@@ -117,18 +126,22 @@ module Fiddler
       end
 
       def create
-         response = Fiddler::ConnectionManager.post("ticket/new", @attributes.to_content_format)
-         puts response.inspect
-         #return Fiddler::Parsers::TicketParser.parse_single(response, :create)
+         return false unless valid?
+         response = Fiddler::ConnectionManager.post("ticket/new", :content => @attributes.to_content_format)
+         id = Fiddler::Parsers::TicketParser.parse_update_response(response, :create)
+         return false unless id
+         @id = id.to_i
+         true
       end
 
       def update
+         return false unless valid?
          payload = @attributes.clone
          payload.delete("text")
-         payload.delete("id") 
-         response = Fiddler::ConnectionManager.post("ticket/#{id}/edit", payload.to_content_format)
-         puts response.inspect
-         #return Fiddler::Parsers::TicketParser.parse_single(response, :update)
+         payload.delete("id")
+         response = Fiddler::ConnectionManager.post("ticket/#{id}/edit", :content => payload.to_content_format)
+         id = Fiddler::Parsers::TicketParser.parse_update_response(response, :update)
+         return !id.nil?
       end
 
       # Class methods

@@ -27,12 +27,73 @@ describe Fiddler::Ticket do
             @ticket.errors.full_messages.should_not be_empty
          end
       end
+
+      describe "saving tickets" do
+         before :each do
+            @ticket = Fiddler::Ticket.new
+         end
+
+         it "should show the validation errors" do
+            @ticket.should_not be_valid
+            puts @ticket.errors.full_messages.empty?
+         end
+
+         it "should not run the save method" do
+            @ticket.save.should be_false
+         end
+
+         it "should save the ticket with appropriate attributes set" do
+            @ticket.subject = "Trial ticket"
+            @ticket.queue = "General"
+            @ticket.save.should be_true
+            @ticket.id.to_i.should be_kind_of(Integer)
+         end
+
+         it "should be able to update the ticket without modifying id, ignoring text" do
+            @ticket.subject = "Trial ticket - Update"
+            @ticket.queue = "General"
+            @ticket.save.should be_true
+            @ticket.id.to_i.should be_kind_of(Integer)
+            @ticket.subject = "Update Subject after saving the ticket"
+            @ticket.save.should be_true
+         end
+
+         it "should create a ticket with initial commit" do
+            @ticket.subject = "Test ticket with text and requestor"
+            @ticket.queue = "General"
+            @ticket.requestors = "jais.cheema@cybersecure.com.au"
+            @ticket.text = "Creating ticket with requestor and text"
+            @ticket.save.should be_true
+         end
+      end
    end
 
-   it "should show the validation errors" do
-      t = Fiddler::Ticket.new
-      t.should_not be_valid
-      puts t.errors.full_messages.empty?
+   describe "updating tickets" do
+      it "should update the ticket requestors properly" do
+         t = Fiddler::Ticket.get(5234)
+         requestors = "#{t.requestors}, rene@cybersecure.com.au"
+         t.requestors = requestors
+         t.save.should be_true
+         t = Fiddler::Ticket.get(5234)
+         t.requestors.should eql(requestors)
+      end
+   end
+
+   describe "managing requestors" do
+      it "should return array of requestors" do
+         t = Fiddler::Ticket.get(5234)
+         requestors = t.requestors
+         t.requestor_array.should be_a_kind_of(Array)
+         t.requestor_array.should eql(requestors.split(", ").collect { |x| x.strip} )
+      end
+
+      it "should add in a proper requestors" do
+         t = Fiddler::Ticket.get(5233)
+         t.requestor_array = ["jais.cheema@cybersecure.com.au", "rene@cybersecure.com.au"]
+         t.save.should be_true
+         t = Fiddler::Ticket.get(5233)
+         t.requestors.should eql("jais.cheema@cybersecure.com.au, rene@cybersecure.com.au")
+      end
    end
    
    describe "Replying to tickets" do
