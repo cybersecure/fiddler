@@ -130,7 +130,7 @@ module Fiddler
          response = Fiddler::ConnectionManager.post("ticket/new", :content => @attributes.to_content_format)
          id = Fiddler::Parsers::TicketParser.parse_update_response(response, :create)
          return false unless id
-         @id = id.to_i
+         self.id = id.to_i
          true
       end
 
