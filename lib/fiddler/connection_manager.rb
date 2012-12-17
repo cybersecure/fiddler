@@ -31,18 +31,20 @@ module Fiddler
          private 
 
          def login!
-            unless @logged_in
-               if Fiddler.configuration.use_cookies
-                  cookie = WebAgent::Cookie.new
-                  cookie.name = Fiddler.configuration.request_tracker_key
-                  cookie.value = Fiddler.configuration.cookie_value
-                  cookie.url = URI.parse(Fiddler.configuration.server_url)
-                  cookie.domain_orig = Fiddler.configuration.cookie_domain
-                  @client.cookie_manager.add(cookie)
-               else
+            unless Fiddler.configuration.use_cookies
+               unless @logged_in
                   @client.post(url_for(base_url), :user => Fiddler.configuration.username, :pass => Fiddler.configuration.password )
+                  @logged_in = true
                end
-               @logged_in = true
+            else
+               @client.cookie_manager.cookies = []
+               cookie = WebAgent::Cookie.new
+               cookie.name = Fiddler.configuration.request_tracker_key
+               cookie.value = Fiddler.configuration.cookie_value
+               cookie.url = URI.parse(Fiddler.configuration.server_url)
+               cookie.domain_orig = Fiddler.configuration.cookie_domain
+               @client.cookie_manager.add(cookie)
+               @logged_in = false
             end
          end
 
