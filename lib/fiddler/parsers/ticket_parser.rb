@@ -10,12 +10,16 @@ module Fiddler
          def self.parse_multiple(response)
             response = check_response_code(response)
             response = check_for_errors(response)
-            ticket_token_responses = tokenize_response(response)
-            tickets = Array.new
-            ticket_token_responses.each do |token_response|
-               tickets << ticket_from_response(token_response)
+            if response.count == 0
+               []
+            else
+               ticket_token_responses = tokenize_response(response)
+               tickets = Array.new
+               ticket_token_responses.each do |token_response|
+                  tickets << ticket_from_response(token_response)
+               end
+               tickets
             end
-            tickets
          end
 
          def self.parse_reply_response(response)
@@ -47,6 +51,8 @@ module Fiddler
             message = response.first.strip
             if message =~ /^#/
                raise Fiddler::TicketNotFoundError, message
+            elsif message == "No matching results."
+               response = []
             end
             response
          end
