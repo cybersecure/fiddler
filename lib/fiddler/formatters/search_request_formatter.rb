@@ -51,8 +51,8 @@ module Fiddler
                         end
                         query_array << '( ' + parts.join(" AND ") + ' )'
                      elsif value.is_a?(String)
-                        # special case for when user is Nobody, like doesnt work there
-                        if key == "Owner" and value == "Nobody"
+                        # special case for the owner field
+                        if key == "Owner"
                            query_array << "#{key} = '#{value}'"
                         else
                            query_array << "#{key} LIKE '#{value}'"
