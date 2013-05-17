@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name        = "fiddler"
   s.version     = Fiddler::VERSION
   s.authors     = ["Jais Cheema"]
-  s.email       = ["jaischeema@gmail.com"]
+  s.email       = ["jais.cheema@cybersecure.com.au"]
   s.homepage    = "https://github.com/jaischeema/fiddler"
   s.summary     = "Interface to Request Tracker based on Roart Gem"
   s.description = "This is the interface to request tracker based on Roart Gem"
